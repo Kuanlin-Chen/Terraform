@@ -23,6 +23,15 @@ resource "aws_security_group" "instance_sg" {
     name = "instance_sg"
 }
 
+resource "aws_security_group_rule" "allow_http_inbound" {
+    type              = "ingress"
+    from_port         = 80
+    to_port           = 80
+    protocol          = "tcp"
+    cidr_blocks       = [aws_vpc.default.cidr_block]
+    security_group_id = aws_security_group.instance_sg.id
+}
+
 resource "aws_instance" "instance_1" {
     ami = "ami-0c55b159cbfafe1f0" # Amazon Linux 2 AMI
     instance_type = "t2.micro"
