@@ -2,9 +2,9 @@ terraform {
     backend "s3" {
         bucket         = "lbsapp-tf-state"
         key            = "terraform.tfstate"
-        region         = "ap-east-2"
+        region         = "ap-northeast-3"
         encrypt        = true
-        dynamodb_table = "lbsapp-tf-locks"
+        use_lockfile   = true
     }
 
     required_providers {
@@ -16,7 +16,7 @@ terraform {
 }
 
 provider "aws" {
-    region = "ap-east-2"
+    region = "ap-northeast-3"
 }
 
 data "aws_vpc" "default_vpc" {
