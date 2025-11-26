@@ -19,16 +19,24 @@ provider "aws" {
     region = "ap-east-2"
 }
 
+data "aws_vpc" "default_vpc" {
+    default = true
+}
+
+data "aws_subnet_ids" "default_subnet" {
+    vpc_id = data.aws_vpc.default_vpc.id
+}
+
+# Security Group for Instances
 resource "aws_security_group" "instance_sg" {
     name = "instance_sg"
 }
-
 resource "aws_security_group_rule" "allow_http_inbound" {
     type              = "ingress"
     from_port         = 80
     to_port           = 80
     protocol          = "tcp"
-    cidr_blocks       = [aws_vpc.default.cidr_block]
+    cidr_blocks       = [aws_vpc.default_vpc.cidr_block]
     security_group_id = aws_security_group.instance_sg.id
 }
 
@@ -76,6 +84,96 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_encryption
         apply_server_side_encryption_by_default {
           kms_master_key_id = aws_kms_key.s3_kms_key.arn
           sse_algorithm = "aws:kms"
+        }
+    }
+}
+
+# Security Group for ALB
+resource "aws_security_group" "alb_sg" {
+    name = "alb_sg"
+}
+resource "aws_security_group_rule" "allow_alb_http_inbound" {
+    type              = "ingress"
+    from_port         = 80
+    to_port           = 80
+    protocol          = "tcp"
+    cidr_blocks       = ["0.0.0.0/0"] # Allow from anywhere
+    security_group_id = aws_security_group.alb_sg.id
+}
+
+resource "aws_security_group_rule" "allow_alb_all_outbound" {
+    type                     = "egress"
+    from_port                = 0
+    to_port                  = 0
+    protocol                 = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    security_group_id = aws_security_group.alb_sg.id
+}
+
+resource "aws_lb" "load_balancer" {
+    name = "web-app-lb"
+    load_balancer_type = "application"
+    subnets = data.aws_subnet_ids.default_subnet.ids
+    security_groups = [aws_security_group.alb_sg.id]
+}
+
+resource "aws_lb_listener" "http_listener" {
+    load_balancer_arn = aws_lb.load_balancer.arn
+    port              = "80"
+    protocol          = "HTTP"
+
+    default_action {
+        type             = "fixed-response"
+
+        fixed_response {
+          content_type = "text/plain"
+          message_body = "404: page not found"
+          status_code = 404
+        }
+    }
+}
+
+resource "aws_lb_target_group" "target_group" {
+    name     = "web-app-tg"
+    port     = 80
+    protocol = "HTTP"
+    vpc_id   = data.aws_vpc.default_vpc.id
+
+    health_check {
+        path                = "/"
+        protocol            = "HTTP"
+        matcher             = "200"
+        interval            = 30
+        timeout             = 5
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+    }
+}
+
+resource "aws_lb_target_group_attachment" "attach_instance_1" {
+    target_group_arn = aws_lb_target_group.target_group.arn
+    target_id        = aws_instance.instance_1.id
+    port             = 80
+}
+
+resource "aws_lb_target_group_attachment" "attach_instance_2" {
+    target_group_arn = aws_lb_target_group.target_group.arn
+    target_id        = aws_instance.instance_2.id
+    port             = 80
+}
+
+resource "aws_lb_listener_rule" "forward_to_tg" {
+    listener_arn = aws_lb_listener.http_listener.arn
+    priority     = 100
+
+    action {
+        type             = "forward"
+        target_group_arn = aws_lb_target_group.target_group.arn
+    }
+
+    condition {
+        path_pattern {
+            values = ["/*"]
         }
     }
 }
