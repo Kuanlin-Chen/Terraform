@@ -23,8 +23,11 @@ data "aws_vpc" "default_vpc" {
     default = true
 }
 
-data "aws_subnet_ids" "default_subnet" {
-    vpc_id = data.aws_vpc.default_vpc.id
+data "aws_subnets" "default_subnets" {
+    filter {
+        name   = "vpc-id"
+        values = [data.aws_vpc.default_vpc.id]
+    }
 }
 
 # Security Group for Instances
@@ -36,7 +39,7 @@ resource "aws_security_group_rule" "allow_http_inbound" {
     from_port         = 80
     to_port           = 80
     protocol          = "tcp"
-    cidr_blocks       = [aws_vpc.default_vpc.cidr_block]
+    cidr_blocks       = [data.aws_vpc.default_vpc.cidr_block]
     security_group_id = aws_security_group.instance_sg.id
 }
 
@@ -113,7 +116,7 @@ resource "aws_security_group_rule" "allow_alb_all_outbound" {
 resource "aws_lb" "load_balancer" {
     name = "web-app-lb"
     load_balancer_type = "application"
-    subnets = data.aws_subnet_ids.default_subnet.ids
+    subnets = data.aws_subnets.default_subnets.ids
     security_groups = [aws_security_group.alb_sg.id]
 }
 
