@@ -44,7 +44,7 @@ resource "aws_security_group_rule" "allow_http_inbound" {
 }
 
 resource "aws_instance" "instance_1" {
-    ami = "ami-0c55b159cbfafe1f0" # Amazon Linux 2 AMI
+    ami = "ami-00439b308401d2460" # al2023-ami-minimal
     instance_type = "t2.micro"
     security_groups = [aws_security_group.instance_sg.name]
     user_data = <<-EOF
@@ -54,7 +54,7 @@ resource "aws_instance" "instance_1" {
 }
 
 resource "aws_instance" "instance_2" {
-    ami = "ami-0c55b159cbfafe1f0" # Amazon Linux 2 AMI
+    ami = "ami-00439b308401d2460" # al2023-ami-minimal
     instance_type = "t2.micro"
     security_groups = [aws_security_group.instance_sg.name]
     user_data = <<-EOF
