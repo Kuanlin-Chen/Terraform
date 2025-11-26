@@ -44,22 +44,24 @@ resource "aws_security_group_rule" "allow_http_inbound" {
 }
 
 resource "aws_instance" "instance_1" {
-    ami = "ami-00439b308401d2460" # al2023-ami-minimal
+    ami = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
     instance_type = "t2.micro"
     security_groups = [aws_security_group.instance_sg.name]
     user_data = <<-EOF
                 #!/bin/bash
-                echo "Hello, World 111" > /var/www/html/index.html
+                echo "Hello, World 111" > index.html
+                python3 -m http.server 80 &
                 EOF
 }
 
 resource "aws_instance" "instance_2" {
-    ami = "ami-00439b308401d2460" # al2023-ami-minimal
+    ami = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
     instance_type = "t2.micro"
     security_groups = [aws_security_group.instance_sg.name]
     user_data = <<-EOF
                 #!/bin/bash
-                echo "Hello, World 222" > /var/www/html/index.html
+                echo "Hello, World 222" > index.html
+                python3 -m http.server 80 &
                 EOF
 }
 
