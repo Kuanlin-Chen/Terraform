@@ -32,3 +32,6 @@ terraform.rc
 
 # Ignore IDE configuration files
 .DS_Store
+
+# Ignore plan files
+tfplan
