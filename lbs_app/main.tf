@@ -19,6 +19,12 @@ provider "aws" {
     region = "ap-northeast-3"
 }
 
+variable "instance_type" {
+    description = "ec2 instance type"
+    type        = string
+    default     = "t2.micro"
+}
+
 data "aws_vpc" "default_vpc" {
     default = true
 }
@@ -45,7 +51,7 @@ resource "aws_security_group_rule" "allow_http_inbound" {
 
 resource "aws_instance" "instance_1" {
     ami = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
-    instance_type = "t2.micro"
+    instance_type = var.instance_type
     security_groups = [aws_security_group.instance_sg.name]
     user_data = <<-EOF
                 #!/bin/bash
@@ -56,7 +62,7 @@ resource "aws_instance" "instance_1" {
 
 resource "aws_instance" "instance_2" {
     ami = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
-    instance_type = "t2.micro"
+    instance_type = var.instance_type
     security_groups = [aws_security_group.instance_sg.name]
     user_data = <<-EOF
                 #!/bin/bash
