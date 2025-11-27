@@ -22,7 +22,7 @@ provider "aws" {
 variable "instance_type" {
     description = "ec2 instance type"
     type        = string
-    default     = "t2.micro"
+    default     = "t3.micro"
 }
 
 data "aws_vpc" "default_vpc" {
@@ -42,8 +42,8 @@ resource "aws_security_group" "instance_sg" {
 }
 resource "aws_security_group_rule" "allow_http_inbound" {
     type              = "ingress"
-    from_port         = 80
-    to_port           = 80
+    from_port         = 8080
+    to_port           = 8080
     protocol          = "tcp"
     cidr_blocks       = [data.aws_vpc.default_vpc.cidr_block]
     security_group_id = aws_security_group.instance_sg.id
@@ -56,7 +56,7 @@ resource "aws_instance" "instance_1" {
     user_data = <<-EOF
                 #!/bin/bash
                 echo "Hello, World 111" > index.html
-                python3 -m http.server 80 &
+                sudo python3 -m http.server 8080 &
                 EOF
 }
 
@@ -67,7 +67,7 @@ resource "aws_instance" "instance_2" {
     user_data = <<-EOF
                 #!/bin/bash
                 echo "Hello, World 222" > index.html
-                python3 -m http.server 80 &
+                sudo python3 -m http.server 8080 &
                 EOF
 }
 
@@ -146,7 +146,7 @@ resource "aws_lb_listener" "http_listener" {
 
 resource "aws_lb_target_group" "target_group" {
     name     = "web-app-tg"
-    port     = 80
+    port     = 8080
     protocol = "HTTP"
     vpc_id   = data.aws_vpc.default_vpc.id
 
@@ -164,13 +164,13 @@ resource "aws_lb_target_group" "target_group" {
 resource "aws_lb_target_group_attachment" "attach_instance_1" {
     target_group_arn = aws_lb_target_group.target_group.arn
     target_id        = aws_instance.instance_1.id
-    port             = 80
+    port             = 8080
 }
 
 resource "aws_lb_target_group_attachment" "attach_instance_2" {
     target_group_arn = aws_lb_target_group.target_group.arn
     target_id        = aws_instance.instance_2.id
-    port             = 80
+    port             = 8080
 }
 
 resource "aws_lb_listener_rule" "forward_to_tg" {
