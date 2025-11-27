@@ -19,12 +19,6 @@ provider "aws" {
     region = "ap-northeast-3"
 }
 
-variable "instance_type" {
-    description = "ec2 instance type"
-    type        = string
-    default     = "t3.micro"
-}
-
 data "aws_vpc" "default_vpc" {
     default = true
 }
