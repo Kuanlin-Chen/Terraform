@@ -47,6 +47,7 @@ resource "aws_instance" "instance_1" {
     ami = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
     instance_type = var.instance_type
     security_groups = [aws_security_group.instance_sg.name]
+    associate_public_ip_address = false
     user_data = <<-EOF
                 #!/bin/bash
                 echo "Hello, World 111" > index.html
@@ -58,6 +59,7 @@ resource "aws_instance" "instance_2" {
     ami = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
     instance_type = var.instance_type
     security_groups = [aws_security_group.instance_sg.name]
+    associate_public_ip_address = false
     user_data = <<-EOF
                 #!/bin/bash
                 echo "Hello, World 222" > index.html
