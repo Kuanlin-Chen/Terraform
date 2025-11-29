@@ -17,7 +17,26 @@ resource "aws_s3_bucket" "vpce_bucket" {
 	force_destroy = true
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "vpce_bucket_policy" {
+    statement {
+        sid    = "AllowAdministratorFullAccess"
+        effect = "Allow"
+
+        principals {
+            type        = "AWS"
+            identifiers = [
+                "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/Administrator"
+            ]
+        }
+
+        actions = ["s3:*"]
+        resources = [
+            aws_s3_bucket.vpce_bucket.arn,
+            "${aws_s3_bucket.vpce_bucket.arn}/*"
+        ]
+    }
 	statement {
 		effect = "Deny"
 
@@ -55,6 +74,23 @@ resource "aws_vpc_endpoint" "s3" {
 
 # now patch the bucket policy to the real vpce id (replace placeholder)
 data "aws_iam_policy_document" "vpce_bucket_policy_real" {
+    statement {
+        sid    = "AllowAdministratorFullAccess"
+        effect = "Allow"
+
+        principals {
+            type        = "AWS"
+            identifiers = [
+                "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/Administrator"
+            ]
+        }
+
+        actions = ["s3:*"]
+        resources = [
+            aws_s3_bucket.vpce_bucket.arn,
+            "${aws_s3_bucket.vpce_bucket.arn}/*"
+        ]
+    }
 	statement {
 		effect = "Deny"
 		
