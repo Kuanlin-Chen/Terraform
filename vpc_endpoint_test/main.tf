@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "vpce_bucket" {
-	bucket        = "vpc-endpoint-test-20251129"
+	bucket        = "vpc-endpoint-new-20251129"
 	force_destroy = true
 }
 
