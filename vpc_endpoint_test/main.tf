@@ -53,7 +53,7 @@ resource "aws_vpc_endpoint" "s3" {
 }
 
 resource "aws_instance" "web" {
-	ami                         = "ami-02e8ce37e058dbe64"
+	ami                         = var.ami_id
 	instance_type               = var.instance_type
 	subnet_id                   = aws_subnet.private.id
 	key_name                    = var.key_name

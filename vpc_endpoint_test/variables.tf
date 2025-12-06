@@ -15,3 +15,9 @@ variable "key_name" {
   type        = string
   default     = "ubuntu"
 }
+
+variable "ami_id" {
+  description = "AMI ID for the EC2 instance"
+  type        = string
+  default     = "ami-0a1c53f150dd059a2" # Amazon Linux 2023 kernel-6.12
+}
