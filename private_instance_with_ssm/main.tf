@@ -72,7 +72,7 @@ resource "aws_security_group" "ec2_sg" {
 
 # IAM Role for EC2
 resource "aws_iam_role" "ec2_role" {
-  name               = "ec2-s3-upload-role"
+  name               = "ec2-role"
   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
 }
 
