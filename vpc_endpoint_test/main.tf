@@ -90,7 +90,7 @@ resource "aws_route_table_association" "private_assoc" {
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2-sg"
   vpc_id      = aws_vpc.this.id
-  description = "SSH access"
+  description = "SSM/VPC Endpoint SG"
 
   # Allow SSM/VPC Endpoint HTTPS
   ingress {
