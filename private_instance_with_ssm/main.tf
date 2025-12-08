@@ -138,34 +138,22 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # Allow CloudTrail to check ACL
       {
-        Sid    = "AWSCloudTrailAclCheck"
-        Effect = "Allow"
-        Principal = {
-          Service = "cloudtrail.amazonaws.com"
-        }
-        Action   = "s3:GetBucketAcl"
-        Resource = "${aws_s3_bucket.cloudtrail_bucket.arn}"
-        Condition = {
-          StringEquals = {
-            "aws:SourceArn" = "arn:aws:cloudtrail:${var.region}:${data.aws_caller_identity.current.account_id}:trail/main-cloudtrail"
-          }
-        }
+        Sid       = "AWSCloudTrailAclCheck"
+        Effect    = "Allow"
+        Principal = { Service = "cloudtrail.amazonaws.com" }
+        Action    = "s3:GetBucketAcl"
+        Resource  = aws_s3_bucket.cloudtrail_bucket.arn
       },
-      # Allow CloudTrail to put logs
       {
-        Sid    = "AWSCloudTrailWrite"
-        Effect = "Allow"
-        Principal = {
-          Service = "cloudtrail.amazonaws.com"
-        }
-        Action   = "s3:PutObject"
-        Resource = "${aws_s3_bucket.cloudtrail_bucket.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+        Sid       = "AWSCloudTrailWrite"
+        Effect    = "Allow"
+        Principal = { Service = "cloudtrail.amazonaws.com" }
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.cloudtrail_bucket.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
         Condition = {
           StringEquals = {
-            "s3:x-amz-acl"  = "bucket-owner-full-control"
-            "aws:SourceArn" = "arn:aws:cloudtrail:${var.region}:${data.aws_caller_identity.current.account_id}:trail/main-cloudtrail"
+            "s3:x-amz-acl" = "bucket-owner-full-control"
           }
         }
       }
