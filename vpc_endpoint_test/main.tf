@@ -70,10 +70,6 @@ resource "aws_vpc" "this" {
   enable_dns_hostnames = true
 }
 
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.this.id
-}
-
 resource "aws_subnet" "private" {
   vpc_id                  = aws_vpc.this.id
   cidr_block              = "10.0.2.0/24"
