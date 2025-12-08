@@ -56,7 +56,6 @@ resource "aws_instance" "web" {
 	ami                         = var.ami_id
 	instance_type               = var.instance_type
 	subnet_id                   = aws_subnet.private.id
-	key_name                    = var.key_name
 	associate_public_ip_address = false
 	vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
 	iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
@@ -96,14 +95,7 @@ resource "aws_security_group" "ec2_sg" {
 	name        = "ec2-sg"
 	vpc_id      = aws_vpc.this.id
 	description = "SSH access"
-	
-	ingress {
-		description = "SSH"
-		from_port   = 22
-		to_port     = 22
-		protocol    = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-	}
+
 	# Allow SSM/VPC Endpoint HTTPS
 	ingress {
 		description = "SSM/VPC Endpoint HTTPS"
