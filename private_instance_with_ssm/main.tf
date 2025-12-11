@@ -144,6 +144,11 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
         Principal = { Service = "cloudtrail.amazonaws.com" }
         Action    = "s3:GetBucketAcl"
         Resource  = aws_s3_bucket.cloudtrail_bucket.arn
+        Condition = {
+          StringEquals = {
+            "aws:SourceArn" = "arn:aws:cloudtrail:${var.region}:${data.aws_caller_identity.current.account_id}:trail/main-cloudtrail"
+          }
+        }
       },
       {
         Sid       = "AWSCloudTrailWrite"
