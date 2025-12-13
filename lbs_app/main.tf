@@ -43,26 +43,28 @@ resource "aws_security_group_rule" "allow_http_inbound" {
   security_group_id = aws_security_group.instance_sg.id
 }
 
-resource "aws_instance" "instance_1" {
-  ami             = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
-  instance_type   = var.instance_type
-  security_groups = [aws_security_group.instance_sg.name]
-  # If the subnet has the auto-assign public IPv4 address set, this option is not considered.
-  associate_public_ip_address = false
-  user_data                   = <<-EOF
+module "instance_1" {
+  source = "./modules/compute"
+
+  ami_id                     = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
+  instance_type              = var.instance_type
+  security_groups            = [aws_security_group.instance_sg.name]
+  associate_public_ip        = false
+  user_data                  = <<-EOF
                 #!/bin/bash
                 echo "Hello, World 111" > index.html
                 sudo python3 -m http.server 8080 &
                 EOF
 }
 
-resource "aws_instance" "instance_2" {
-  ami             = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
-  instance_type   = var.instance_type
-  security_groups = [aws_security_group.instance_sg.name]
-  # If the subnet has the auto-assign public IPv4 address set, this option is not considered.
-  associate_public_ip_address = false
-  user_data                   = <<-EOF
+module "instance_2" {
+  source = "./modules/compute"
+
+  ami_id                     = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
+  instance_type              = var.instance_type
+  security_groups            = [aws_security_group.instance_sg.name]
+  associate_public_ip        = false
+  user_data                  = <<-EOF
                 #!/bin/bash
                 echo "Hello, World 222" > index.html
                 sudo python3 -m http.server 8080 &
@@ -161,13 +163,13 @@ resource "aws_lb_target_group" "target_group" {
 
 resource "aws_lb_target_group_attachment" "attach_instance_1" {
   target_group_arn = aws_lb_target_group.target_group.arn
-  target_id        = aws_instance.instance_1.id
+  target_id        = module.instance_1.instance_id
   port             = 8080
 }
 
 resource "aws_lb_target_group_attachment" "attach_instance_2" {
   target_group_arn = aws_lb_target_group.target_group.arn
-  target_id        = aws_instance.instance_2.id
+  target_id        = module.instance_2.instance_id
   port             = 8080
 }
 
