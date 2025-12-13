@@ -16,12 +16,6 @@ variable "security_groups" {
   default     = []
 }
 
-variable "associate_public_ip" {
-  description = "Whether to associate a public IP address"
-  type        = bool
-  default     = false
-}
-
 variable "user_data" {
   description = "User data script for the EC2 instance"
   type        = string
