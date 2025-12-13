@@ -10,7 +10,7 @@ variable "instance_type" {
   default     = "t3.micro"
 }
 
-variable "security_group_ids" {
+variable "security_groups" {
   description = "List of security group IDs"
   type        = list(string)
   default     = []
