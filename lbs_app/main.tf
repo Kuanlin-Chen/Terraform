@@ -79,11 +79,6 @@ resource "aws_s3_bucket" "moved_bucket" {
   force_destroy = true
 }
 
-moved {
-  from = aws_s3_bucket.bucket
-  to   = aws_s3_bucket.moved_bucket
-}
-
 resource "aws_s3_bucket_versioning" "bucket_versioning" {
   bucket = aws_s3_bucket.moved_bucket.id
   versioning_configuration {
