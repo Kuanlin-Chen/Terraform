@@ -46,10 +46,10 @@ resource "aws_security_group_rule" "allow_http_inbound" {
 module "instance_1" {
   source = "./modules/private_instance"
 
-  ami_id                     = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
-  instance_type              = var.instance_type
-  security_groups            = [aws_security_group.instance_sg.name]
-  user_data                  = <<-EOF
+  ami_id          = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
+  instance_type   = var.instance_type
+  security_groups = [aws_security_group.instance_sg.name]
+  user_data       = <<-EOF
                 #!/bin/bash
                 echo "Hello, World 111" > index.html
                 sudo python3 -m http.server 8080 &
@@ -59,10 +59,10 @@ module "instance_1" {
 module "instance_2" {
   source = "./modules/private_instance"
 
-  ami_id                     = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
-  instance_type              = var.instance_type
-  security_groups            = [aws_security_group.instance_sg.name]
-  user_data                  = <<-EOF
+  ami_id          = "ami-09a38e2e7a3cc42de" # Ubuntu Server 24.04 LTS
+  instance_type   = var.instance_type
+  security_groups = [aws_security_group.instance_sg.name]
+  user_data       = <<-EOF
                 #!/bin/bash
                 echo "Hello, World 222" > index.html
                 sudo python3 -m http.server 8080 &
@@ -127,7 +127,7 @@ resource "aws_lb" "load_balancer" {
 
   lifecycle {
     postcondition {
-      condition = self.dns_name != null && self.dns_name != ""
+      condition     = self.dns_name != null && self.dns_name != ""
       error_message = "Load balancer should have a DNS name assigned."
     }
   }
