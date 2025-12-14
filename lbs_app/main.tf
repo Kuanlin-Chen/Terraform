@@ -74,20 +74,25 @@ resource "aws_kms_key" "s3_kms_key" {
   deletion_window_in_days = 10
 }
 
-resource "aws_s3_bucket" "bucket" {
+resource "aws_s3_bucket" "moved_bucket" {
   bucket_prefix = "lbsapp-bucket"
   force_destroy = true
 }
 
+moved {
+  from = aws_s3_bucket.bucket
+  to   = aws_s3_bucket.moved_bucket
+}
+
 resource "aws_s3_bucket_versioning" "bucket_versioning" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.moved_bucket.id
   versioning_configuration {
     status = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_encryption" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.moved_bucket.id
 
   rule {
     apply_server_side_encryption_by_default {
